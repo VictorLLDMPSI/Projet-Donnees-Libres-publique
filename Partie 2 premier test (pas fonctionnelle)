@@ -1,0 +1,119 @@
+#include <stdexcept>
+/** @file **/
+#include <fstream>
+#include <sstream>
+#include "tableau-donnees-avance.hpp"
+
+
+int chercheIndice(vector<string> t, string valeur) {
+    for (int i = 0; i < t.size(); i++) {
+        if (t[i] == valeur) {
+            return i; 
+        }
+    }
+    return -1;
+}
+
+vector<string> distinct(vector<vector<string>> data, int j) {
+    vector<string> result;  // Vecteur pour stocker les valeurs distinctes
+
+    
+    for (int i = 0; i < data.size(); i++) {// Parcourt chaque ligne du tableau 
+        result.push_back(data[i][j]);  // Ajoute directement la valeur de la colonne j
+    }
+
+    return result;
+}
+
+vector<double> conversionDouble(vector<string> t) {
+    vector<double> result; 
+
+    for (const string& str : t) {
+        stringstream ss(str);  // Créer un flux de string
+        double val;
+        ss >> val;  // convertir la chaîne en double
+        result.push_back(val);  // Ajouter le double au vecteur
+    }
+
+    return result;
+}
+
+vector<int> groupByInt(vector<vector<string>> data, vector<string> valeurs, int j1, int j2) {
+    vector<int> result(valeurs.size(), 0);  
+    for (int i = 0; i < data.size(); i++) {
+        string valeurColonneJ1 = data[i][j1]; 
+        int valeurColonneJ2 = stoi(data[i][j2]);  
+        for (int k = 0; k < valeurs.size(); k++) {
+            if (valeurColonneJ1 == valeurs[k]) {
+                result[k] += valeurColonneJ2;
+            }
+        }
+    }
+
+    return result;
+}
+
+
+vector<double> groupByDouble(vector<vector<string>> data, vector<string> valeurs, int j1, int j2) {
+ vector<double> result(valeurs.size(), 0.0);  
+
+    for (int i = 0; i < data.size(); i++) {
+        string valeurColonneJ1 = data[i][j1];  // Valeur dans la colonne j1
+        string valeurColonneJ2 = data[i][j2];  // Valeur dans la colonne j2 
+        
+        double valeurDoubleColonneJ2;// Conversion de valeurColonneJ2 en double
+        stringstream(valeurColonneJ2) >> valeurDoubleColonneJ2;
+
+     
+        for (int k = 0; k < valeurs.size(); k++) {   // Parcours des valeurs distinctes dans "valeurs"
+          
+            if (valeurColonneJ1 == valeurs[k]) {  // Si la valeur de la colonne j1 correspond à une valeur dans "valeurs", on ajoute à la somme
+                result[k] += valeurDoubleColonneJ2;
+            }
+        }
+    }
+
+    return result;
+}
+
+
+template<class T>
+vector<T> conversion(vector<string> t) {
+    vector<T> result;
+    
+    // Parcours de chaque élément du vecteur
+    for (int i = 0; i < t.size(); i++) {
+        T convertedValue;
+        stringstream(t[i]) >> convertedValue;  // Conversion de la chaîne en type T
+        result.push_back(convertedValue);  // Ajouter la valeur convertie dans le vecteur résultat
+    }
+
+    return result;
+}
+
+template<class T>
+vector<T> groupBy(vector<vector<string>> data, vector<string> valeurs, int j1, int j2) {
+    vector<T> sommee(valeurs.size(), 0);
+    for (int i = 0; i < data.size(); ++i) {  // Parcours de chaque ligne du tableau
+        string key = data[i][j1];  // Valeur de la clé (colonne j1)
+        T value =conversion(data[i][j2]);  // Valeur à additionner (colonne j2)
+
+        
+        for (int k = 0; k < valeurs.size(); ++k) {// Parcours des valeurs distinctes à comparer
+            if (key == valeurs[k]) {  // Si la clé correspond à une valeur dans valeurs
+                sommee[k] += value;  // Ajouter la valeur à la somme correspondante
+            }
+        }
+    }
+
+    return sommee; 
+}
+
+// Force l'instanciation des templates
+template vector<int> conversion<int>(vector<string> t);
+template vector<double> conversion<double>(vector<string> t);
+template vector<int> groupBy<int>(vector<vector<string>> data, vector<string> valeurs, int j1, int j2);
+template vector<double> groupBy<double>(vector<vector<string>> data, vector<string> valeurs, int j1, int j2);
+
+
+
